@@ -42,32 +42,3 @@ _VALKEY_CONTENT_FIELD = "content"
 _VALKEY_METADATA_FIELD = "metadata"
 _VALKEY_CHUNK_ID_FIELD = "chunk_id"
 _VALKEY_METADATA_PREFIX = "meta_"
-
-
-    def _create_client(self) -> Any:
-        """Create a Valkey-glide client."""
-        from glide import GlideClient, GlideClientConfiguration, NodeAddress
-
-        config = self._vector_store_config
-        node = NodeAddress(host=config.host, port=config.port)
-
-        if config.password:
-            from glide import ServerCredentials
-
-            client_config = GlideClientConfiguration(
-                addresses=[node],
-                use_tls=config.use_ssl,
-                request_timeout=config.request_timeout,
-                credentials=ServerCredentials(password=config.password),
-                client_name="dbgpt_vector_store_client",
-            )
-        else:
-            client_config = GlideClientConfiguration(
-                addresses=[node],
-                use_tls=config.use_ssl,
-                request_timeout=config.request_timeout,
-                client_name="dbgpt_vector_store_client",
-            )
-
-        # GlideClient.create() is async — run it in our dedicated loop
-        return self._loop.run_until_complete(GlideClient.create(client_config))
